@@ -1,0 +1,59 @@
+/* Basic navigation bar styling */
+.navbar {
+    background-color: #333; /* Dark background color */
+    color: white; /* White text */
+    padding: 1rem;
+    display: flex;
+    justify-content: space-around; /* Distribute items evenly */
+    align-items: center;
+  }
+  
+  /* Style for navigation links */
+  .navbar a {
+    color: white;
+    text-decoration: none; /* Remove underlines from links */
+    padding: 0.5rem 1rem;
+    border-radius: 5px; /* Rounded corners */
+  }
+  
+  /* Hover effect for links */
+  .navbar a:hover {
+    background-color: #555; /* Slightly lighter background on hover */
+  }
+  
+  /* If you want to highlight the active link (optional) */
+  /* You'll need to add logic in your Navigation component to
+     apply an "active" class to the currently active link */
+  .navbar a.active {
+    background-color: #007bff; /* Highlight color (e.g., blue) */
+  }
+  
+  /* Example for a more modern look: */
+  
+  /* .navbar {
+    background-color: #f8f9fa;  Light background
+    border-bottom: 1px solid #ddd;  Subtle border
+    padding: 0.75rem 1.5rem;
+    display: flex;
+    justify-content: space-between;  Space between logo/title and links
+    align-items: center;
+  }
+  
+  .navbar a {
+    color: #333;  Dark text
+    text-decoration: none;
+    margin-left: 1.5rem;  Spacing between links
+    font-weight: 500;
+  }
+  
+  .navbar a:hover {
+    color: #007bff;  Blue hover color
+  } */
+  
+  
+  /* Add more styles as needed, such as for:
+     - Responsive design (adjusting for smaller screens with media queries)
+     - Logo or site title styling (if you have one in your navigation)
+     - Dropdown menus (if you have nested navigation)
+     - Search bar or other interactive elements within the navigation
+  */

@@ -1,0 +1,74 @@
+.counseling-history-container {
+  max-width: 800px;
+  margin: 20px auto;
+  background: linear-gradient(to bottom, #ffffff, #f7f7f7); /* Subtle gradient */
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  padding: 20px;
+}
+
+.counseling-history-container h2 {
+  text-align: center;
+  color: #333;
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.history-table {
+  width: 100%;
+  border-collapse: collapse;
+  overflow-x: auto; /* Make table scrollable on small screens */
+  display: block;
+}
+
+.history-table th,
+.history-table td {
+  border: 1px solid #ddd;
+  padding: 12px 15px;
+  text-align: left;
+}
+
+.history-table th {
+  background-color: #4caf50;
+  color: white;
+}
+
+.history-table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.history-table tr:hover {
+  background-color: #e8f5e9; /* Light green for hover */
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.error-message {
+  color: #d32f2f;
+  font-weight: bold;
+  background-color: #fdecea;
+  padding: 10px;
+  border-radius: 4px;
+  margin: 20px 0;
+  text-align: center;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.no-history-message {
+  color: #757575;
+  text-align: center;
+  font-style: italic;
+  margin-top: 20px;
+}
+
+@keyframes fadeIn {
+  from {
+      opacity: 0;
+  }
+  to {
+      opacity: 1;
+  }
+}
