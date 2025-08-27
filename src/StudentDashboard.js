@@ -1,152 +1,61 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-import { useNavigate, Routes, Route } from "react-router-dom"; // Import necessary hooks
-import "./styles/StudentDashboard.css"; // Add this CSS file for styles
-import AppointmentBooking from "./AppointmentBooking"; // Corrected import path
+
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 const StudentDashboard = () => {
-    const [dashboardData, setDashboardData] = useState(null); // Holds backend data
-    const [loading, setLoading] = useState(true); // Loading state
-    const [error, setError] = useState(null); // Error state
-    const navigate = useNavigate(); // Get the navigate function
+  const [studentData, setStudentData] = useState(null);
+  const [error, setError] = useState(null);
 
-    useEffect(() => {
-        const fetchDashboardData = async () => {
-            setLoading(true);
-            setError(null);
-            try {
-                const token = sessionStorage.getItem("token");
+  useEffect(() => {
+    const fetchStudentData = async () => {
+      try {
+        // Retrieve JWT token from sessionStorage using the correct key "token"
+        const token = sessionStorage.getItem('token');
 
-                if (!token) {
-                    throw new Error("No token found. Please log in.");
-                }
+        // Send a request to your backend to fetch student data
+        const response = await axios.get('http://localhost:8082/student/dashboard', {
+          headers: {
+            Authorization: `Bearer ${token}`, // Add Bearer prefix
+          },
+        });
 
-                const response = await axios.get("http://localhost:8082/student/dashboard", {
-                    headers: { Authorization: `Bearer ${token}` },
-                });
-
-                setDashboardData(response.data); // Store fetched data
-            } catch (err) {
-                setError(err.response?.data?.error || err.message || "Error fetching dashboard data.");
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchDashboardData();
-    }, []);
-
-    const handleBookAppointmentClick = () => {
-        navigate("book"); // Navigate to the appointment form (nested route)
+        // Update the state with the student data
+        setStudentData(response.data);
+      } catch (err) {
+        setError('Failed to fetch student data');
+        // You might want to log the error for debugging:
+        console.error("Error fetching student data:", err);
+      }
     };
 
-    // Placeholder for handling "Chat Now," "View Resources," and "Logout"
-    const handleChatNowClick = () => {
-        // Add chat functionality here (e.g., open a chat window)
-        console.log("Chat Now clicked");
-    };
+    fetchStudentData();
+  }, []);
 
-    const handleViewResourcesClick = () => {
-        // Add navigation or functionality to view resources
-        console.log("View Resources clicked");
-    };
-
-    const handleLogoutClick = () => {
-        // Add logout functionality (clear token, navigate to login)
-        sessionStorage.removeItem("token");
-        sessionStorage.removeItem("role");
-        sessionStorage.removeItem("email");
-        navigate("/"); // Assuming "/" is your login/home route
-    };
-
-    if (loading) {
-        return (
-            <div className="dashboard-container">
-                <p>Loading data...</p>
-            </div>
-        );
+  // Helper function to extract student ID and modify it (no changes here)
+  const formatStudentId = (email) => {
+    if (email) {
+      const idPart = email.split('@')[0];
+      return 'AM' + idPart.slice(2);
     }
+    return '';
+  };
 
-    if (error) {
-        return (
-            <div className="dashboard-container">
-                <p className="error">Error: {error}</p>
-            </div>
-        );
-    }
+  if (error) {
+    return <div>{error}</div>;
+  }
 
-    if (!dashboardData) {
-        return (
-            <div className="dashboard-container">
-                <p>No data available for your dashboard.</p>
-            </div>
-        );
-    }
+  if (!studentData) {
+    return <div>Loading...</div>;
+  }
 
-    return (
-        <div className="dashboard-container">
-            <header className="dashboard-header">
-                <h1>Welcome, {dashboardData.fullName}! 👋</h1>
-                <p>Email: {dashboardData.email}</p>
-            </header>
-
-            <div className="dashboard-content">
-                {/* Section: Upcoming Appointments */}
-                <section className="dashboard-section">
-                    <h2>Upcoming Appointments</h2>
-                    {dashboardData.upcomingAppointments?.length > 0 ? (
-                        <ul>
-                            {dashboardData.upcomingAppointments.map((appointment, index) => (
-                                <li key={index}>{appointment.details}</li>
-                            ))}
-                        </ul>
-                    ) : (
-                        <p>No upcoming appointments.</p>
-                    )}
-                    <button className="section-button" onClick={handleBookAppointmentClick}>
-                        Book an Appointment
-                    </button>
-                </section>
-
-                {/* Section: Counseling History */}
-                <section className="dashboard-section">
-                    <h2>Counseling History</h2>
-                    {dashboardData.counselingHistory?.length > 0 ? (
-                        <ul>
-                            {dashboardData.counselingHistory.map((session, index) => (
-                                <li key={index}>{session.details}</li>
-                            ))}
-                        </ul>
-                    ) : (
-                        <p>No past counseling sessions found.</p>
-                    )}
-                </section>
-
-                {/* Section: Ask Sophie */}
-                <section className="dashboard-section">
-                    <h2>Ask Sophie</h2>
-                    <p>Need guidance? Chat with Sophie!</p>
-                    <button className="section-button" onClick={handleChatNowClick}>Chat Now</button>
-                </section>
-
-                {/* Section: Academic Resources */}
-                <section className="dashboard-section">
-                    <h2>Academic Resources</h2>
-                    <p>Explore guides and materials to support your studies.</p>
-                    <button className="section-button" onClick={handleViewResourcesClick}>View Resources</button>
-                </section>
-            </div>
-
-            <footer className="dashboard-footer">
-                <button className="footer-button" onClick={handleLogoutClick}>Logout</button>
-            </footer>
-
-            {/* Nested route for Appointment Form */}
-            <Routes>
-                <Route path="book" element={<AppointmentBooking />} /> {/* Corrected component name */}
-            </Routes>
-        </div>
-    );
+  return (
+    <div>
+      <h1>Welcome to the Student Dashboard!</h1>
+      <p>Email: {studentData.email}</p>
+      <p>Student ID: {formatStudentId(studentData.email)}</p>
+      <p>Student Name: {studentData.studentName}</p>
+    </div>
+  );
 };
 
 export default StudentDashboard;

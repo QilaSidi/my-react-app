@@ -1,4 +1,3 @@
-// src/StudentLogin.js
 import React, { useState } from "react";
 import axios from "axios";
 import { GoogleLogin } from "@react-oauth/google";
@@ -17,22 +16,25 @@ const StudentLogin = () => {
       const googleToken = credentialResponse.credential;
       console.log("Google Token:", googleToken);
 
-      // Send Google token to backend to get JWT
-      const response = await axios.post("http://localhost:8082/api/auth/login", {
-        token: googleToken,
-      });
+      // 1. NEW: Send Google token to a dedicated backend endpoint for verification and JWT retrieval.
+      const verificationResponse = await axios.post(
+        "http://localhost:8082/api/auth/google-login", //  <----  NEW ENDPOINT
+        { token: googleToken }
+      );
 
-      const { jwt, role, email } = response.data;
+      // Assuming the backend responds with { jwt, role, email } upon successful verification:
+      const { jwt, role, email } = verificationResponse.data;
 
       console.log("JWT:", jwt);
       console.log("Role:", role);
       console.log("Email:", email);
 
-      // Save JWT and other user details in sessionStorage
+      // 2. Save JWT and other user details in sessionStorage
       sessionStorage.setItem("token", jwt);
       sessionStorage.setItem("role", role);
       sessionStorage.setItem("email", email);
 
+      // 3.  Role-based navigation
       if (role === "STUDENT") {
         navigate("/student/dashboard");
       } else {
@@ -47,10 +49,13 @@ const StudentLogin = () => {
   };
 
   const handleBypassLogin = async () => {
+    setIsLoading(true);
+    setErrorMessage("");
     try {
-      const response = await axios.post("http://localhost:8082/student/login", {
-        email: "student@students.kuptm.edu.my",
-        password: "password123",
+      // Send "email" and "role" to the EXISTING /api/auth/login - ensure backend handles this appropriately
+      const response = await axios.post("http://localhost:8082/api/auth/login", {
+        email: "student@students.kuptm.edu.my", // Or another appropriate test student email
+        role: "STUDENT", // Set the role directly
       });
 
       const { jwt, role, email } = response.data;
@@ -59,14 +64,17 @@ const StudentLogin = () => {
       sessionStorage.setItem("role", role);
       sessionStorage.setItem("email", email);
 
+      // Check the role before navigating
       if (role === "STUDENT") {
         navigate("/student/dashboard");
       } else {
-        setErrorMessage("Access denied: You are not a STUDENT.");
+        setErrorMessage("Bypass login returned non-STUDENT role.");  // Improved error message
       }
     } catch (error) {
       console.error("Bypass login error:", error.response?.data || error.message);
-      setErrorMessage("Bypass login failed. Check server or credentials.");
+      setErrorMessage(error.response?.data?.error || "Bypass login failed.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
